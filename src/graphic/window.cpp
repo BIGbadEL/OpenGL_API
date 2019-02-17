@@ -30,6 +30,8 @@ namespace SandBox {
 
         temp->_width = width;
         temp->_height = height;
+
+        glViewport(0, 0, width, height);
     }
 
     void Window::Init() {
@@ -54,6 +56,8 @@ namespace SandBox {
             return;
         }
 
+        glViewport(0, 0, _width, _height);
+
         glfwSetWindowUserPointer(_window, this);
 
         glfwSetWindowSizeCallback(_window, window_size_callback);
@@ -67,7 +71,6 @@ namespace SandBox {
     }
 
     void Window::Update() const {
-        //glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(_window);
         glfwPollEvents();
     }

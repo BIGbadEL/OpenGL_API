@@ -5,6 +5,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/vendor/glad/)
 project(Sandbox_tests)
 
 include_directories(${CMAKE_SOURCE_DIR}/vendor/glad/include/)
+include_directories(${CMAKE_SOURCE_DIR}/src/utils/)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -18,7 +19,7 @@ add_compile_options(
         #-fsanitize=kernel-address -fsanitize=pointer-compare -fsanitize=pointer-subtract
         )
 
-add_executable(Sandbox_tests main.cpp src/graphic/window.cpp src/graphic/window.h)
+add_executable(Sandbox_tests main.cpp src/graphic/window.cpp src/graphic/window.h src/graphic/shader.cpp src/graphic/shader.h src/utils/read_file.h src/utils/read_file.cpp)
 
 target_link_libraries(Sandbox_tests glad glfw3 GL X11 Xi Xrandr Xxf86vm Xinerama Xcursor rt m pthread dl ubsan )
 
