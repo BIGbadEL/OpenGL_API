@@ -63,6 +63,8 @@ namespace SandBox {
         glfwSetWindowSizeCallback(_window, window_size_callback);
         glfwSetCursorPosCallback(_window, cursor_position_callback);
 
+        glfwSwapInterval(0);
+
         std::cout << "OpenGL: " << glGetString(GL_VERSION) << '\n';
         std::cout << "Vendor: " << glGetString(GL_VENDOR) << '\n';
         std::cout << "Renderer: " << glGetString(GL_RENDERER) << '\n';
