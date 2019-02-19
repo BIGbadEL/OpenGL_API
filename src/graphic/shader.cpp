@@ -6,6 +6,8 @@
 
 #include "glad/glad.h"
 
+#include "utils_file.h"
+
 namespace SandBox{
 
     Shader::Shader(const char* vertPath, const char* fragPath) {
@@ -83,5 +85,21 @@ namespace SandBox{
 
     void Shader::SetVec4(const char* name, float x, float y, float z, float w) {
         glUniform4f(glGetUniformLocation(_id, name), x, y, z, w);
+    }
+
+    void Shader::SetVec2(const char* name, glm::vec2 vec) {
+        glUniform2fv(glGetUniformLocation(_id, name),1 , &vec[0]);
+    }
+
+    void Shader::SetVec3(const char* name, glm::vec3 vec) {
+        glUniform3fv(glGetUniformLocation(_id, name),1 , &vec[0]);
+    }
+
+    void Shader::SetVec4(const char* name, glm::vec4 vec) {
+        glUniform4fv(glGetUniformLocation(_id, name),1 , &vec[0]);
+    }
+
+    void Shader::SetMat4(const char* name, glm::mat4 matrix) {
+        glUniformMatrix4fv(glGetUniformLocation(_id, name), 1, GL_FALSE, &matrix[0][0]);
     }
 }

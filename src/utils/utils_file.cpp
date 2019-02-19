@@ -1,7 +1,10 @@
 //
 // Created by grzegorz on 17.02.19.
 //
-#include "read_file.h"
+#include "utils_file.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
 
 namespace SandBox{
     std::string read_file(const char* path){
@@ -33,5 +36,14 @@ namespace SandBox{
         delete[] data;
 
         return result;
+    }
+
+    unsigned char* load_img(const char* path, int* width, int* height, int* nrChannels){
+        stbi_set_flip_vertically_on_load(true);
+        return stbi_load(path, width, height, nrChannels, 0);
+    }
+
+    void free_img(unsigned char* data){
+        stbi_image_free(data);
     }
 }

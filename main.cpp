@@ -6,10 +6,12 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
+#include "src/graphic/texture.h"
 
 #include <cmath>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 constexpr int width = 800;
 constexpr int height = 600;
@@ -18,19 +20,54 @@ int main() {
 
     SandBox::Window window(width, height, "Hello");
 
-    float vertices[] = {
-            ///Pierwszy trójkąt.
-            /// Position          Color              TexCoords
-            -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,  0.0f, 1.0f,    /// lewy górny wierzchołek - wsp : (0, 1)
-            -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,  0.0f, 0.0f,    /// lewy dolny wierzchołek - wsp : (0, 0)
-            0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,  1.0f, 0.0f,    ///prawy dolny wierzchołek - wsp : (1, 0)
+    glEnable(GL_DEPTH_TEST); //TODO: move to window
 
-            ///Drugi trójkąt.
-            /// Position          Color              TexCoords
-            -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,  0.0f, 1.0f,    /// lewy górny wierzchołek - wsp : (0, 1)
-            0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,  1.0f, 0.0f,    ///prawy dolny wierzchołek - wsp : (1, 0)
-            0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,  1.0f, 1.0f     ///prawy górny wierzchołek - wsp : (1, 1)
+    float vertices[] = {
+            /// position         texCoord
+            /// Tył
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            /// Przód
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            /// Lewa strona
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            /// Prawa strona
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            /// Dół
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            /// Góra
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
+
 
 
 
@@ -45,14 +82,11 @@ int main() {
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3*sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -60,56 +94,26 @@ int main() {
 
     //texture
 
-    stbi_set_flip_vertically_on_load(true);
+    SandBox::Texture texture("textures/wood.jpg");
 
-    int t_width, t_height, t_nrChannels;
-
-    unsigned char* data = stbi_load("textures/wood.jpg", &t_width, &t_height, &t_nrChannels, 0);
-
-    unsigned texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t_width, t_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else std::cerr << "Failed to load image" << std::endl;
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    stbi_image_free(data);
-
-    data = stbi_load("textures/lena.jpg", &t_width, &t_height, &t_nrChannels, 0);
-    unsigned texture2;
-    glGenTextures(1, &texture2);
-
-    std::cout << t_width << "x" << t_height << " " << texture2 <<'\n';
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if(data){
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t_width, t_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    } else std::cerr << "Failed to load image" << std::endl;
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    stbi_image_free(data);
+    SandBox::Texture texture2("textures/krolik.png");
 
     //end texture
 
     SandBox::Shader shader("shaders/shader.vert", "shaders/shader.frag");
 
+    shader.Bind();
     shader.SetInt("texture1", 0);
     shader.SetInt("texture2", 1);
+
+    glm::mat4 view(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    shader.SetMat4("view", view);
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 100.0f);
+
+    shader.SetMat4("projection", projection);
 
     glClearColor(0.4f, 0.4f, 0.6f, 1.0f);
 
@@ -128,17 +132,36 @@ int main() {
 
         shader.Bind();
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glm::mat4 model(1.0f);
+
+        model = rotate(model, static_cast<float>(glfwGetTime()), glm::vec3(1.0f, 0.5f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+
+        shader.SetMat4("model", model);
+
         glActiveTexture(GL_TEXTURE0);
+        texture.Bind();
 
-
-        glBindTexture(GL_TEXTURE_2D, texture2);
         glActiveTexture(GL_TEXTURE1);
+        texture2.Bind();
 
         glBindVertexArray(VAO);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+
+        model = glm::mat4(1.0f);
+         model = glm::translate(model, glm::vec3(0.0f,1.0f,0.0f)); // sześcian będzie na orbicie punktu (0,1,0).
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f,1.0f,0.0f));
+        model = glm::translate(model, glm::vec3(1.0f, 0.0f,0.0f));
+        model = glm::scale(model, glm::vec3(0.2f, 1.0f,1.0f));
+        shader.SetMat4("model", model);
+
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
 
         window.Update();
 
