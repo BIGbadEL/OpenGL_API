@@ -5,6 +5,10 @@
 #include <iostream>
 #include "window.h"
 
+#include "Events/event.h"
+#include "Events/events.h"
+#include "Events/event_manager.h"
+
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
@@ -32,6 +36,9 @@ namespace SandBox {
         temp->_height = height;
 
         glViewport(0, 0, width, height);
+
+        EventManager::Emit<WindowResize>();
+
     }
 
     void Window::Init() {

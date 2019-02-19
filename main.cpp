@@ -2,6 +2,7 @@
 
 #include "src/graphic/window.h"
 #include "src/graphic/shader.h"
+#include "src/Events/event_manager.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -12,13 +13,22 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Events/events.h>
 
 constexpr int width = 800;
 constexpr int height = 600;
 
+void onResize(SandBox::Window* win){
+    std::cout << win->getWidth() << " x " << win->getHeight() << '\n';
+}
+
 int main() {
 
+
+
     SandBox::Window window(width, height, "Hello");
+
+    SandBox::EventManager::AddCallback<SandBox::WindowResize>(onResize, &window);
 
     glEnable(GL_DEPTH_TEST); //TODO: move to window
 
@@ -172,7 +182,11 @@ int main() {
 
         prev_time = static_cast<int>(time);
         frame_count++;
+
+        SandBox::EventManager::Flush();
     }
+
+    SandBox::EventManager::CleanUp();
 
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
