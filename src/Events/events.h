@@ -8,10 +8,18 @@
 
 namespace SandBox {
 
-    class WindowResize : public Event{
+    class WindowResize : public Event {
         friend class EventManager;
     protected:
         WindowResize() = default;
+    public:
+        std::type_index Type() const override { return typeid(typeof(*this)); }
+    };
+
+    class CursorMove : public Event {
+        friend class EventManager;
+    protected:
+        CursorMove() = default;
     public:
         std::type_index Type() const override { return typeid(typeof(*this)); }
     };

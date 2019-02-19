@@ -27,6 +27,8 @@ namespace SandBox {
 
         temp->_x = xPos;
         temp->_y = yPos;
+
+        EventManager::Emit<CursorMove>();
     }
 
     void window_size_callback(GLFWwindow* window, int width, int height) {

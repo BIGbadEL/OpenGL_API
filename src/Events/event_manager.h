@@ -63,6 +63,14 @@ namespace SandBox {
 
     }
 
+    template<class T>
+    bool EventManager::onEvent() {
+        for(auto ev : _events_queue){
+            if(ev->Type() == typeid(T)) return true;
+        }
+        return false;
+    }
+
 }
 
 //SANDBOX_TESTS_EVENT_MANAGER_H

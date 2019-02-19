@@ -22,6 +22,12 @@ void onResize(SandBox::Window* win){
     std::cout << win->getWidth() << " x " << win->getHeight() << '\n';
 }
 
+void onCursorMove(SandBox::Window* window){
+    double x,y;
+    window->getMousePos(x, y);
+    glClearColor(static_cast<float>(x / window->getWidth()), static_cast<float>(y / window->getHeight()), 0.0f, 1.0f);
+}
+
 int main() {
 
 
@@ -29,6 +35,7 @@ int main() {
     SandBox::Window window(width, height, "Hello");
 
     SandBox::EventManager::AddCallback<SandBox::WindowResize>(onResize, &window);
+    SandBox::EventManager::AddCallback<SandBox::CursorMove>(onCursorMove, &window);
 
     glEnable(GL_DEPTH_TEST); //TODO: move to window
 
@@ -131,14 +138,9 @@ int main() {
     int prev_time = 0;
 
     while(!window.ShouldClose()){
-        double x,y;
-        window.getMousePos(x, y);
-
         double time = glfwGetTime();
 
         window.Clear();
-
-        glClearColor(static_cast<float>(x / window.getWidth()), static_cast<float>(y / window.getHeight()), 0.0f, 1.0f);
 
         shader.Bind();
 
@@ -183,7 +185,7 @@ int main() {
         prev_time = static_cast<int>(time);
         frame_count++;
 
-        SandBox::EventManager::Flush();
+        SandBox::EventManager::Flush(2);
     }
 
     SandBox::EventManager::CleanUp();

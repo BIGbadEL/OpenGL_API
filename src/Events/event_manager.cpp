@@ -2,6 +2,7 @@
 // Created by grzegorz on 19.02.19.
 //
 
+#include <iostream>
 #include "event_manager.h"
 
 namespace SandBox{
@@ -26,24 +27,17 @@ namespace SandBox{
     }
 
     void EventManager::Flush(int n) {
+
         if(n == -1){
             while(!_events_queue.empty()) call();
         } else {
-            for(int i = 0; i < n; ++i) if(!_events_callbacks.empty()) call();
+            for(int i = 0; i < n; ++i) if(_events_queue.empty()) return; else call();
         }
     }
 
     void EventManager::CleanUp() {
         std::for_each(_events_queue.begin(), _events_queue.end(), [](Event* ev){ delete ev; });
         for(auto a : _events_callbacks) delete a.second;
-    }
-
-    template<class T>
-    bool EventManager::onEvent() {
-        for(auto ev : _events_queue){
-            if(ev->Type() == typeid(T)) return true;
-        }
-        return false;
     }
 
 }
