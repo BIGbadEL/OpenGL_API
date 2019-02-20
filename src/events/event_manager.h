@@ -13,7 +13,6 @@
 #include <typeinfo>
 
 #include "event.h"
-#include "strong_type/strong_type.h"
 
 namespace SandBox {
 
@@ -33,7 +32,7 @@ namespace SandBox {
         static void Flush(int n = -1);
 
     private:
-        static void call();
+        static inline void call();
 
     private:
         static std::unordered_map<std::type_index, std::vector<std::function<void()>>*> _events_callbacks;
@@ -65,6 +64,7 @@ namespace SandBox {
 
     template<class T>
     bool EventManager::onEvent() {
+        static_assert(std::is_base_of<Event, T>::value , "Event is not the base of T");
         for(auto ev : _events_queue){
             if(ev->Type() == typeid(T)) return true;
         }

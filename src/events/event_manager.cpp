@@ -27,7 +27,7 @@ namespace SandBox{
     }
 
     void EventManager::Flush(int n) {
-
+//        std::cout << _events_queue.size() << '\n';
         if(n == -1){
             while(!_events_queue.empty()) call();
         } else {

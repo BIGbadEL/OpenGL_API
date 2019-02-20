@@ -5,9 +5,11 @@
 #include <iostream>
 #include "window.h"
 
-#include "Events/event.h"
-#include "Events/events.h"
-#include "Events/event_manager.h"
+#include "events/event.h"
+#include "events/events.h"
+#include "events/event_manager.h"
+
+#include "input/input_manager.h"
 
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
@@ -15,11 +17,13 @@
 namespace SandBox {
     Window::Window(int width, int height, const char* name): _width(width), _height(height), _name(name) {
         Init();
+        InputManager::Init();
     }
 
     Window::~Window() {
         glfwDestroyWindow(_window);
         glfwTerminate();
+        SandBox::EventManager::CleanUp();
     }
 
     void cursor_position_callback(GLFWwindow* window, double xPos, double yPos){
@@ -29,6 +33,7 @@ namespace SandBox {
         temp->_y = yPos;
 
         EventManager::Emit<CursorMove>();
+
     }
 
     void window_size_callback(GLFWwindow* window, int width, int height) {
@@ -71,6 +76,8 @@ namespace SandBox {
 
         glfwSetWindowSizeCallback(_window, window_size_callback);
         glfwSetCursorPosCallback(_window, cursor_position_callback);
+        glfwSetKeyCallback(_window, key_callback);
+        glfwSetMouseButtonCallback(_window, mouse_button_callback);
 
         glfwSwapInterval(0);
 
@@ -82,8 +89,10 @@ namespace SandBox {
     }
 
     void Window::Update() const {
+        SandBox::EventManager::Flush();
         glfwSwapBuffers(_window);
         glfwPollEvents();
+        InputManager::Update();
     }
 
     bool Window::ShouldClose() const {
