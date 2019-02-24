@@ -93,6 +93,11 @@ namespace SandBox {
         glfwSwapBuffers(_window);
         glfwPollEvents();
         InputManager::Update();
+
+        GLenum error = glGetError();
+        if(error != GL_NO_ERROR){
+            std::cout << "OpenGL ERROR:" << error << std::endl;
+        }
     }
 
     bool Window::ShouldClose() const {
@@ -101,6 +106,14 @@ namespace SandBox {
 
     void Window::Clear() const {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void Window::EnableDepthTest() {
+        glEnable(GL_DEPTH_TEST);
+    }
+
+    void Window::Close() const {
+        glfwSetWindowShouldClose(_window, true);
     }
 
 

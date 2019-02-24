@@ -12,13 +12,14 @@ namespace SandBox {
 
     class Camera {
     public:
-        explicit Camera(glm::vec3 pos)
-        :_position(pos), _worldUp(0.0f, 1.0f, 0.0f), _speed(0.025f), _mouseSensitivity(0.1f), pitch(0.0f), yaw(-90.0f) { UpdateMembers(); }
+        explicit Camera(glm::vec3 pos);
+
 
         inline glm::mat4 GetViewMatrix() const { return glm::lookAt(_position, _position + _front, _up); }
+        inline glm::vec3 GetPosition() const { return _position; }
 
         enum class Movement{
-            forward, backward, left, right
+            forward, backward, left, right, up, down
         };
 
         void Move(Movement direction, float dt);

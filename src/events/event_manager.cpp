@@ -7,7 +7,7 @@
 
 namespace SandBox{
 
-    std::unordered_map<std::type_index, std::vector<std::function<void()>>*> EventManager::_events_callbacks;
+    std::unordered_map<std::type_index, std::vector<Callback*>*> EventManager::_events_callbacks;
     std::deque<Event*> EventManager::_events_queue;
 
     void EventManager::call(){
@@ -21,7 +21,7 @@ namespace SandBox{
             return;
         }
 
-        for(auto& fun : *callbacks->second) fun();
+        for(auto& fun : *callbacks->second) fun->run();
 
         delete event;
     }
@@ -37,7 +37,14 @@ namespace SandBox{
 
     void EventManager::CleanUp() {
         std::for_each(_events_queue.begin(), _events_queue.end(), [](Event* ev){ delete ev; });
-        for(auto a : _events_callbacks) delete a.second;
+        for(auto a : _events_callbacks) {
+
+            for(auto b: *a.second){
+                delete b;
+            }
+
+            delete a.second;
+        }
     }
 
 }

@@ -7,6 +7,17 @@
 
 namespace SandBox {
 
+    Camera::Camera(glm::vec3 pos)
+            :_position(pos),
+            _worldUp(0.0f, 1.0f, 0.0f),
+            _speed(0.025f),
+            _mouseSensitivity(0.2f),
+            pitch(0.0f),
+            yaw(-90.0f)
+    {
+        UpdateMembers();
+    }
+
     void SandBox::Camera::Move(SandBox::Camera::Movement direction, float dt) {
         float velocity = dt * _speed;
 
@@ -22,6 +33,12 @@ namespace SandBox {
                 break;
             case Movement::left:
                 _position -= _right * velocity;
+                break;
+            case Movement::down:
+                _position -= _up * velocity;
+                break;
+            case Movement::up:
+                _position += _up * velocity;
                 break;
         }
 
